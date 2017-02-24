@@ -1,29 +1,24 @@
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
+##################################################
+# This is for the purpose of ignoring unix executable files without extensions.
+# See https://www.zhihu.com/question/26247816?sorted=created
+##################################################
+# ignore all files and directories
+*
 
-# Precompiled Headers
-*.gch
-*.pch
+# add designated directories and their subdirectories
+!/source/
+!/source/**/
 
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
+# add files with designated extension and Makefile
+!*.cpp
+!*.c
+!*.h
+!Makefile
+!.md
 
-# Fortran module files
-*.mod
-*.smod
+# ignore special files, generally files in the current directory(current directory is not ignorable)
+# /xxx.cpp
+# /xxx.h
 
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
 
-# Executables
-*.exe
-*.out
-*.app
+## OR we can put all generated files in /build and ignore /build.
