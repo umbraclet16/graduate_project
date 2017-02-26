@@ -8,6 +8,8 @@
 # add designated directories and their subdirectories
 !/source/
 !/source/**/
+!/obsolete/
+!/obsolete/**/
 
 # add files with designated extension and Makefile
 !*.cpp
