@@ -85,51 +85,60 @@ void currTimeToStr(char* str)    // "yyyymmdd_hhMM"
         return;
 }
 
-int mkDir(char* dir_name)   // not supporting multi-level! Parent dir must exist, or mkdir() fails.
+// return value: 0: Success; -1: Fail
+int CreateDirMultiLevel(const char *sPathName)
 {
-    // Use argument as directory name. If argument is empty, use "data/date_and_time" as default
-    if (!strlen(dir_name))
-    {
-            strcpy(dir_name, "data/");
+    char dirName[256];
+    strcpy(dirName, sPathName);
 
-            char str[30];
-            currTimeToStr(str);
-            strcat(dir_name, str);
-    }
-    
-    int ret = 0;
+    int len = strlen(dirName);
+    if(dirName[len-1] != '/')
+        strcat(dirName, "/");
+    len = strlen(dirName);
 
-    // If directory not exists, make directory; else, ask if overwrite
-    while (1)
+    int cnt_mkdir;      // count the times that mkdir() has been called
+
+    // Create directory recursively. mkdir() cannot create multi-level path at once!
+    for (int i = 1; i < len; i++)
     {
-        if (access(dir_name, F_OK))
+        if (dirName[i] == '/')
         {
-            ret = mkdir(dir_name, S_IRWXU | S_IRWXG | S_IRWXO);
-            if (!ret)
-                cout << "Create path: " << dir_name << endl;
-            else
-                cout << "Create path failed! error code: " << ret << endl;
-            return ret;
+            dirName[i] = 0;
+            if (access(dirName, F_OK) != 0)     // directory not exists
+            {
+                cnt_mkdir++;
+                // mkdir(dirName, S_IRWXU | S_IRWXG | S_IRWXO)
+                int ret = mkdir(dirName, 0755);
+                if (ret == -1) // fails to creat directory
+                {
+                    perror("mkdir error");
+                    return -1;
+                }
+            }
+            dirName[i] = '/';
         }
-        else
-        {
-            cout << "Directory " << dir_name << " already exists! Overwrite?(y/n)" << endl;
+    }
+
+    // If the directory already exists, ask if overwrite
+    if (cnt_mkdir == 0)     // the entire path already exists
+    {
+            cout << "Directory " << dirName << " already exists! Overwrite?(y/n)" << endl;
             char c;
             cin >> c;
             if (c == 'y' || c == '\n')
-            {
                 return 0;
-            }
-            else if (c == 'n') 
-            {
-                cout << "Input another directory name:" << endl;
-                cin >> dir_name;
-            }
-        }
+            else
+                return -1;
     }
+    else
+    {
+        cout << "Created path: " << dirName << endl;
+    }
+
+    return 0;
 }
 
-bool dirEmpty(char* dir_name)
+bool dirEmpty(const char* dir_name)
 {
     // Use readdir() to count files in the directory. If there are only . and .., the directory is empty
     DIR *dirp;
@@ -150,7 +159,7 @@ bool dirEmpty(char* dir_name)
         return false;
 }
 
-void rmEmptyDir(char* dir_name)
+void rmEmptyDir(const char* dir_name)
 {
     if (dirEmpty(dir_name))
     {
@@ -167,11 +176,15 @@ int main(int argc, const char* argv[])
     // Display usage information
     usage(argv);
 
-    // TODO: only make directory when taking pictures or recording?
-    // Make directory for storing pics and videos.
-    // (If no pic/video files created before program exits, the dir will be removed)
-    int ret = mkDir(dir_name);
-    if (ret) return -1;     // Failed to make directory, exit
+    // Use argument as directory name. If argument is empty, use "data/date_and_time" as default
+    if (!strlen(dir_name))
+    {
+            strcpy(dir_name, "data/");
+
+            char str[30];
+            currTimeToStr(str);
+            strcat(dir_name, str);
+    }
 
 	VideoCapture cap[CAM_NUM];
     VideoWriter  put[CAM_NUM];
@@ -186,7 +199,6 @@ int main(int argc, const char* argv[])
         if (!cap[i].isOpened())
         {
             cout << "Capture could not be opened successfully, exiting." << endl;
-            rmEmptyDir(dir_name);
             return -1;
         }
 	}
@@ -213,6 +225,14 @@ int main(int argc, const char* argv[])
 
 	while (runflag)
 	{
+        // Make directory for storage if taking pictures or recording
+        if (!dir_created && (take_pics || record))
+        {
+            dir_created = true;
+            int ret = CreateDirMultiLevel(dir_name);
+            if (ret) return -1;     // Failed to make directory, exit
+        }
+
         //----------------------------------------------------------------------
         // Use parallel loops. (private eliminates data competition)
 		#pragma omp parallel for private(img, img_scaled, coord_left, coord_top)
@@ -317,9 +337,6 @@ int main(int argc, const char* argv[])
                 break;
         }
 	}
-
-    // Remove the created directory if empty
-    rmEmptyDir(dir_name);
 
 	return 0;
 }
