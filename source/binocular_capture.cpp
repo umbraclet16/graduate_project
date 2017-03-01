@@ -29,7 +29,7 @@ char dir_name[100] = "";        // default directory name for pictures and video
 bool dir_created = false;
 bool video_file_created = false;
 
-void argParsing(int argc, const char* argv[])
+static void argParsing(int argc, const char* argv[])
 {
     for (int i = 1; i < argc; i++)
     {
@@ -59,7 +59,7 @@ void argParsing(int argc, const char* argv[])
 }
 
 // TODO: display usage on the screen?
-void usage(const char* argv[])
+static void usage(const char* argv[])
 {
     cout << "--------------------------------------------------" << endl;
     cout << "Optional arguments:" << endl;
@@ -74,7 +74,7 @@ void usage(const char* argv[])
     cout << "--------------------------------------------------" << endl;
 }
 
-void currTimeToStr(char* str)    // "yyyymmdd_hhMM"
+static void currTimeToStr(char* str)    // "yyyymmdd_hhMM"
 {
         // Get date
         time_t tm;
@@ -86,7 +86,7 @@ void currTimeToStr(char* str)    // "yyyymmdd_hhMM"
 }
 
 // return value: 0: Success; -1: Fail
-int CreateDirMultiLevel(const char *sPathName)
+static int mkDirRecursive(const char *sPathName)
 {
     char dirName[256];
     strcpy(dirName, sPathName);
@@ -138,7 +138,7 @@ int CreateDirMultiLevel(const char *sPathName)
     return 0;
 }
 
-bool dirEmpty(const char* dir_name)
+static bool dirEmpty(const char* dir_name)
 {
     // Use readdir() to count files in the directory. If there are only . and .., the directory is empty
     DIR *dirp;
@@ -159,7 +159,7 @@ bool dirEmpty(const char* dir_name)
         return false;
 }
 
-void rmEmptyDir(const char* dir_name)
+static void rmEmptyDir(const char* dir_name)
 {
     if (dirEmpty(dir_name))
     {
@@ -229,7 +229,7 @@ int main(int argc, const char* argv[])
         if (!dir_created && (take_pics || record))
         {
             dir_created = true;
-            int ret = CreateDirMultiLevel(dir_name);
+            int ret = mkDirRecursive(dir_name);
             if (ret) return -1;     // Failed to make directory, exit
         }
 
