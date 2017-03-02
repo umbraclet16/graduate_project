@@ -96,7 +96,7 @@ static int mkDirRecursive(const char *sPathName)
         strcat(dirName, "/");
     len = strlen(dirName);
 
-    int cnt_mkdir;      // count the times that mkdir() has been called
+    int cnt_mkdir = 0;      // count the times that mkdir() has been called
 
     // Create directory recursively. mkdir() cannot create multi-level path at once!
     for (int i = 1; i < len; i++)
@@ -119,16 +119,10 @@ static int mkDirRecursive(const char *sPathName)
         }
     }
 
-    // If the directory already exists, ask if overwrite
+    // If the directory already exists, warn the user
     if (cnt_mkdir == 0)     // the entire path already exists
     {
-            cout << "Directory " << dirName << " already exists! Overwrite?(y/n)" << endl;
-            char c;
-            cin >> c;
-            if (c == 'y' || c == '\n')
-                return 0;
-            else
-                return -1;
+            cout << "Directory " << dirName << " already exists! Files inside will be overwritten." << endl;
     }
     else
     {
@@ -184,6 +178,25 @@ int main(int argc, const char* argv[])
             char str[30];
             currTimeToStr(str);
             strcat(dir_name, str);
+    }
+    else    // Check if directory already exists
+    {
+        bool b_exist = ! access(dir_name, F_OK);    // return 0 if exists
+        while (b_exist)
+        {
+            cout << "Directory " << dir_name << " already exists! Overwrite(y/n)?" << endl;
+            char c;
+            c = getchar();
+            if (c == 'y' || c == '\n')
+            {
+                break;
+            }
+            else
+            {
+                cout << "Input another directory name:" << endl;
+                cin >> dir_name;
+            }
+        }
     }
 
 	VideoCapture cap[CAM_NUM];
