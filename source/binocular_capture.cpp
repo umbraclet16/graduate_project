@@ -37,7 +37,7 @@ static void argParsing(int argc, const char* argv[])
         {
             //------------------------------
             i++;
-            // CAUTIOUS! argv[i] is a string, *argv[i] is a character!!!
+            // CAUTIOUS! argv[i] returns a string, *argv[i] returns a character!!!
             if (*argv[i] >= '0' && *argv[i] <= '9')
                 camera_offset = *argv[i] - '0';
             else
@@ -76,13 +76,13 @@ static void usage(const char* argv[])
 
 static void currTimeToStr(char* str)    // "yyyymmdd_hhMM"
 {
-        // Get date
-        time_t tm;
-        time(&tm);
-        struct tm *t_local = localtime(&tm);
-        // Custom time format. %F:2017-xx-xx, %T:hh:mm:ss, %H:hh, %M:MM
-        strftime(str, 100, "%Y%m%d_%H%M", t_local);     // 2017mmdd_hhMM
-        return;
+    // Get date
+    time_t tm;
+    time(&tm);
+    struct tm *t_local = localtime(&tm);
+    // Custom time format. %F:2017-xx-xx, %T:hh:mm:ss, %H:hh, %M:MM
+    strftime(str, 100, "%Y%m%d_%H%M", t_local);     // 2017mmdd_hhMM
+    return;
 }
 
 // return value: 0: Success; -1: Fail
@@ -122,7 +122,7 @@ static int mkDirRecursive(const char *sPathName)
     // If the directory already exists, warn the user
     if (cnt_mkdir == 0)     // the entire path already exists
     {
-            cout << "Directory " << dirName << " already exists! Files inside will be overwritten." << endl;
+        cout << "Directory " << dirName << " already exists! Files inside will be overwritten." << endl;
     }
     else
     {
@@ -173,11 +173,11 @@ int main(int argc, const char* argv[])
     // Use argument as directory name. If argument is empty, use "data/date_and_time" as default
     if (!strlen(dir_name))
     {
-            strcpy(dir_name, "data/");
+        strcpy(dir_name, "data/");
 
-            char str[30];
-            currTimeToStr(str);
-            strcat(dir_name, str);
+        char str[30];
+        currTimeToStr(str);
+        strcat(dir_name, str);
     }
     else    // Check if directory already exists
     {
@@ -199,45 +199,45 @@ int main(int argc, const char* argv[])
         }
     }
 
-	VideoCapture cap[CAM_NUM];
+    VideoCapture cap[CAM_NUM];
     VideoWriter  put[CAM_NUM];
-	int i;
+    int i;
 
     // Open the cameras
-	#pragma omp parallel for
-	for (i = 0; i < CAM_NUM; i++)
-	{
-		cap[i].open(i+camera_offset);
+    #pragma omp parallel for
+    for (i = 0; i < CAM_NUM; i++)
+    {
+        cap[i].open(i+camera_offset);
         // Check if the file was opened properly
         if (!cap[i].isOpened())
         {
             cout << "Capture could not be opened successfully, exiting." << endl;
             return -1;
         }
-	}
+    }
 
     // Origin size of camera input
-	int origin_width = cap[0].get(CV_CAP_PROP_FRAME_WIDTH);
-	int origin_height = cap[0].get(CV_CAP_PROP_FRAME_HEIGHT);
+    int origin_width = cap[0].get(CV_CAP_PROP_FRAME_WIDTH);
+    int origin_height = cap[0].get(CV_CAP_PROP_FRAME_HEIGHT);
     // If we put two video in a row directly, the window will be too wide for the screen.
     // So scale them by 4/5.
     int width = origin_width * 4 / 5;
     int height = origin_height * 4 / 5;
     // Put two videos in a row in the same window
-	int display_width = width * 2;
-	int display_height = height;
+    int display_width = width * 2;
+    int display_height = height;
 
-	Mat imageShow(display_height, display_width, CV_8UC3);  // used for display
-	Mat img;                    // store input frames
-	Mat img_scaled;             // used for scaling the inputs
+    Mat imageShow(display_height, display_width, CV_8UC3);  // used for display
+    Mat img;                    // store input frames
+    Mat img_scaled;             // used for scaling the inputs
     // coordinates of top left corner of each camera input at different place of the display window
-	int coord_left, coord_top;  
+    int coord_left, coord_top;  
     bool runflag = true;
 
     namedWindow("Binocular camera", WINDOW_AUTOSIZE);
 
-	while (runflag)
-	{
+    while (runflag)
+    {
         // Make directory for storage if taking pictures or recording
         if (!dir_created && (take_pics || record))
         {
@@ -248,15 +248,15 @@ int main(int argc, const char* argv[])
 
         //----------------------------------------------------------------------
         // Use parallel loops. (private eliminates data competition)
-		#pragma omp parallel for private(img, img_scaled, coord_left, coord_top)
-		for (i = 0; i < CAM_NUM; i++)
-		{
-			cap[i+camera_offset] >> img;
-			if (img.empty())
-			{
-				runflag = false;    // Either input channel finishes will stop both channels
-				break;
-			}
+        #pragma omp parallel for private(img, img_scaled, coord_left, coord_top)
+        for (i = 0; i < CAM_NUM; i++)
+        {
+            cap[i+camera_offset] >> img;
+            if (img.empty())
+            {
+                runflag = false;    // Either input channel finishes will stop both channels
+                break;
+            }
 
             //-------------------- Take pictures --------------------
             if (take_pics)
@@ -305,11 +305,11 @@ int main(int argc, const char* argv[])
             resize(img, img_scaled, Size(width, height));
 
             // Solve for the coordinates of top left corner of the child window
-			coord_left = i % 2 * width;
-			coord_top = 0;
+            coord_left = i % 2 * width;
+            coord_top = 0;
             // Copy the scaled image into the child window
-			img_scaled.copyTo(imageShow(Rect(coord_left, coord_top, width, height)));
-		}
+            img_scaled.copyTo(imageShow(Rect(coord_left, coord_top, width, height)));
+        }
         //----------------------------------------------------------------------
         // Output text
         string msg_pics = format("Pictures taken: %d", cnt_pics);
@@ -328,7 +328,7 @@ int main(int argc, const char* argv[])
         // Show image and check for input commands
         imshow("Binocular camera", imageShow);
 
-		char key = waitKey(33);    // 30 fps
+        char key = waitKey(33);    // 30 fps
         switch (key)
         {
             case '\n':
@@ -349,7 +349,7 @@ int main(int argc, const char* argv[])
             default:
                 break;
         }
-	}
+    }
 
-	return 0;
+    return 0;
 }
