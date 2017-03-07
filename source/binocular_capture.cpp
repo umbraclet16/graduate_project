@@ -264,7 +264,7 @@ int main(int argc, const char* argv[])
                 if (i == 0) cnt_pics++;         // update picture index before left camera takes a picture
                 if (i == 1) take_pics = false;  // reset flag when right camera takes a picture
                 char file_path[50];
-                sprintf(file_path, "%s/%s%d.jpg", dir_name, camera_name[i], cnt_pics);
+                sprintf(file_path, "%s/%s%02d.jpg", dir_name, camera_name[i], cnt_pics);
                 imwrite(file_path, img);
                 cout << "A picture has been written to " << file_path << "!" << endl;
             }
@@ -276,7 +276,7 @@ int main(int argc, const char* argv[])
                 if (!video_file_created)
                 {
                     char file_path[50];
-                    sprintf(file_path, "%s/v_%s%d.mpg", dir_name, camera_name[i], cnt_videos);
+                    sprintf(file_path, "%s/v_%s%02d.mpg", dir_name, camera_name[i], cnt_videos);
                     put[i].open(file_path, CV_FOURCC('M', 'P', 'E', 'G'), 30, Size(origin_width, origin_height));
                     if (!put[i].isOpened())
                     {
