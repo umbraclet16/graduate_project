@@ -10,13 +10,16 @@
 !/source/**/
 !/obsolete/
 !/obsolete/**/
+!/images/
+!/images/**/
 
 # add files with designated extension and Makefile
 !*.cpp
 !*.c
 !*.h
 !Makefile
-!.md
+!*.md
+!*.jpg
 
 # ignore special files, generally files in the current directory(current directory is not ignorable)
 # /xxx.cpp
