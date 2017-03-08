@@ -26,10 +26,10 @@ using namespace cv;
 //--------------------------------------------------
 // Parameters. Edit according to your condition(camera, chessboard, assumptions)
 //--------------------------------------------------
-const int boardWidth = 6;   // number of corners per row
-const int boardHeight = 5;  // number of corners per column
-const int frameNumber = 15; // number of input images for calibration
-const float squareSize = 1;   // the size of a square in the chessboard(in mm)
+const int boardWidth = 6;       // number of corners per row
+const int boardHeight = 5;      // number of corners per column
+const int frameNumber = 15;     // number of input images for calibration
+const float squareSize = 30;    // the size of a square in the chessboard(in mm)
 const int imageWidth = 640;
 const int imageHeight = 480;
 const Size boardSize(boardWidth, boardHeight);
