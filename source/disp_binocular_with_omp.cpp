@@ -54,7 +54,7 @@ int main(int argc, char* argv[])
 	Mat img;                    // store input frames
 	Mat img_scaled;             // used for scaling the inputs
     // coordinates of top left corner of each camera input at different place of the display window
-	int coord_left, coord_top;  
+	int coord_left, coord_top;
     bool runflag = true;
 
     namedWindow("Binocular camera", WINDOW_AUTOSIZE);
