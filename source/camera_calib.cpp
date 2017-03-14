@@ -202,7 +202,7 @@ void usage()
     cout << "Usage:" << endl
          << "\t-i: xml/yaml file containing image list;" << endl
          << "\t    (if omitted, program will prompt to input from keyboard)" << endl
-         << "\t-o: output filename to save calibration result, default is 'result_TIME.xml'." << endl;
+         << "\t-o: output filename to save calibration result, default is 'calib_result_TIME.xml'." << endl;
 }
 
 bool readImageListFile(const string& filename, vector<string>& imageList)
