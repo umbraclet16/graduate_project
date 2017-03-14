@@ -42,11 +42,11 @@ int flag = 0;
 // Global Variables
 //--------------------------------------------------
 Mat cameraMatrix;           // camera intrinsic matrix
-Mat distCoeffs;          // distortion coefficients
+Mat distCoeffs;             // distortion coefficients
 vector<Point2f> cornerBuf;  // corners found by findChessboardCorners()
 vector<vector<Point2f> > imagePoints;   // set of corners on each images in image coordinate
 vector<vector<Point3f> > objectPoints;  // set of corners on each images in world coordinate
-vector<string> imageList;           // list of image names
+vector<string> imageList;               // list of image names
 //--------------------------------------------------
 // Function Declarations
 //--------------------------------------------------
@@ -78,9 +78,9 @@ int main(int argc, const char* argv[])
     //-------------------- 0.parse arguments --------------------
     for (int i = 1; i < argc; i++)
     {
-        if (argv[i] == "-i")
+        if (string(argv[i]) == "-i")    // !must convert to string! or use !strcmp()
             readImageListFile(argv[++i], imageList);
-        if (argv[i] == "-o")
+        if (string(argv[i]) == "-o")
             outputFileName = argv[++i];
     }
     // if have not read image list from file, create one from keyboard input
@@ -94,7 +94,7 @@ int main(int argc, const char* argv[])
         time(&tm);
         struct tm *t2 = localtime(&tm);
         strftime(buf, sizeof(buf)-1, "%m%d", t2);
-        outputFileName = "result_" + string(buf) + ".xml";
+        outputFileName = "calib_result_" + string(buf) + ".xml";
     }
 
     // comment out undesired flag
