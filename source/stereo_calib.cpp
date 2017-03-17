@@ -29,8 +29,12 @@ int boardHeight = 5;      // number of corners per column
 float squareSize = 30;    // the size of a square in the chessboard(in mm)
 Size boardSize(boardWidth, boardHeight);
 bool showRectified = true;
-int delay_ms = 500;       // time delay between displaying two images
+int delay_ms = 300;       // time delay between displaying two images
 
+bool useIndividualCalibResult = true;  // use individual calib result
+// individual calib result filenames
+string calibResultLFn("calib_result_l.xml");
+string calibResultRFn("calib_result_r.xml");
 //--------------------------------------------------
 // Global Variables
 //--------------------------------------------------
@@ -178,14 +182,30 @@ void stereoCalib(const vector<string>& imageList, const Size& boardSize, bool sh
     cameraMatrix[0] = Mat::eye(3, 3, CV_64F);
     cameraMatrix[1] = Mat::eye(3, 3, CV_64F);
     Mat R, T, E, F;
+    int flag = 0;
+    flag = CV_CALIB_FIX_ASPECT_RATIO + CV_CALIB_ZERO_TANGENT_DIST;
+
+    if (useIndividualCalibResult)
+    {
+        flag = CV_CALIB_FIX_INTRINSIC;  // only R, T, E, and F are estimated
+
+        FileStorage fs(calibResultLFn, FileStorage::READ);
+        fs["cameraMatrix"] >> cameraMatrix[0];
+        fs["distCoeffs"]   >> distCoeffs[0];
+        fs.release();
+
+        fs.open(calibResultRFn, FileStorage::READ);
+        fs["cameraMatrix"] >> cameraMatrix[1];
+        fs["distCoeffs"]   >> distCoeffs[1];
+        fs.release();
+    }
+
 
     double rms = stereoCalibrate(objectPoints, imagePoints[0], imagePoints[1],
             cameraMatrix[0], distCoeffs[0], cameraMatrix[1], distCoeffs[1],
             imageSize, R, T, E, F,
             TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 100, 1e-6),
-            CV_CALIB_FIX_ASPECT_RATIO + CV_CALIB_ZERO_TANGENT_DIST
-            + CV_CALIB_RATIONAL_MODEL + CV_CALIB_FIX_K3 + CV_CALIB_FIX_K4
-            + CV_CALIB_FIX_K5 + CV_CALIB_FIX_K6);
+            flag);
 
     cout << "Finished, with RMS error = " << rms << endl;
 
@@ -266,7 +286,7 @@ int findCorners(const vector<string>& imageList, vector<vector<Point2f> > imageP
             }
             else
             {
-                cout << "Failed to detect corners in" << filename << endl;
+                cout << "Failed to detect corners in " << filename << endl;
                 break;
             }
 
