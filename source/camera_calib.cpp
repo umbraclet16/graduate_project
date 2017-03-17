@@ -35,7 +35,7 @@ const int imageHeight = 480;
 const Size boardSize(boardWidth, boardHeight);
 const Size imageSize(imageWidth, imageHeight);
 string outputFileName;
-int delay_ms = 800;         // time delay between displaying two images
+int delay_ms = 300;         // time delay between displaying two images
 int flag = 0;
 
 //--------------------------------------------------
@@ -352,8 +352,8 @@ void saveCameraParams(Size imageSize, Mat& cameraMatrix, Mat& distCoeffs,
     }
     fs << "flagValue" << flag;
 
-    fs << "camera_Matrix" << cameraMatrix;
-    fs << "Distortion_Coefficients" << distCoeffs;
+    fs << "cameraMatrix" << cameraMatrix;
+    fs << "distCoeffs" << distCoeffs;
     fs << "Avg_Reprojection_Errors" << totalAvgErr;
 }
 
