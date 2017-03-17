@@ -132,7 +132,7 @@ int main(int argc, const char* argv[])
             cout << "Detected corners in " << imageList[currentIndex] << endl;
         }
         else
-            cout << "Failed to detect corners in" << imageList[currentIndex] << endl;
+            cout << "Failed to detect corners in " << imageList[currentIndex] << endl;
 
         // output text
         string msg = format("%d/%d", (int)imagePoints.size(), frameNumber);
@@ -277,11 +277,11 @@ bool runCalibration(Size imageSize, Mat& cameraMatrix, Mat& distCoeffs,
     if (flag & CV_CALIB_FIX_ASPECT_RATIO)
         cameraMatrix.at<double>(0, 0) = 1.0;
 
-    distCoeffs = Mat::zeros(8, 1, CV_64F);
+    distCoeffs = Mat::zeros(5, 1, CV_64F);
 
     // find intrinsic and extrinsic camera parameters
     double rms = calibrateCamera(objectPoints, imagePoints, imageSize,
-            cameraMatrix, distCoeffs, rvecs, tvecs, flag|CV_CALIB_FIX_K4|CV_CALIB_FIX_K5);
+            cameraMatrix, distCoeffs, rvecs, tvecs, flag);
 
     cout << "Re-projection error reported by calibrateCamera(): " << rms << endl;
 
