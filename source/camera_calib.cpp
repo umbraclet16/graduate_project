@@ -115,7 +115,7 @@ int main(int argc, const char* argv[])
 
         // look for corners in the current image
         bool found = findChessboardCorners(image, boardSize, cornerBuf, 
-                CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FAST_CHECK | CV_CALIB_CB_NORMALIZE_IMAGE);
+                CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_NORMALIZE_IMAGE);
         if (found)
         {
             // improve the found corners' coordinate accuracy
