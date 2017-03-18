@@ -200,7 +200,6 @@ void stereoCalib(const vector<string>& imageList, const Size& boardSize, bool sh
         fs.release();
     }
 
-
     double rms = stereoCalibrate(objectPoints, imagePoints[0], imagePoints[1],
             cameraMatrix[0], distCoeffs[0], cameraMatrix[1], distCoeffs[1],
             imageSize, R, T, E, F,
@@ -242,6 +241,7 @@ int findCorners(const vector<string>& imageList, vector<vector<Point2f> > imageP
     {
         int k;
         Mat imgL, imgR;     // to display image pairs in the same window
+        bool imgPairGood = true;
         for (k = 0; k < 2; k++)
         {
             const string& filename = imageList[i*2+k];  // 'left01.jpg','right01.jpg','left02.jpg',...
@@ -287,13 +287,20 @@ int findCorners(const vector<string>& imageList, vector<vector<Point2f> > imageP
             else
             {
                 cout << "Failed to detect corners in " << filename << endl;
-                break;
+                /*
+                 *We should break if fails to detect corners in left images,
+                 *but this causes problem: imgR will not be assigned, then mergeImages() will crash.
+                 *To fix this, either we don't break, or we don't show the merged images.
+                 *THIS FOR LOOP IS REALLY A BAD CHOICE...
+                 */
+                //break;
+                imgPairGood = false;
             }
 
         }
 
         // successfully detected corners in both images
-        if (k == 2)
+        if (imgPairGood)
         {
             goodImageList.push_back(imageList[i*2]);
             goodImageList.push_back(imageList[i*2+1]);
