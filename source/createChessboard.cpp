@@ -1,5 +1,6 @@
 /// Create an image of chessboard for camera calibration.
 /// Print the generated image on a A4 paper.
+/// (Actually displaying the image on the screen may be better)
 
 #include "opencv2/highgui/highgui.hpp"
 
